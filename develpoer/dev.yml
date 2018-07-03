@@ -1,0 +1,53 @@
+# nginx
+nginx:
+  build: docker/nginx
+  volumes:
+      - ./:/project:ro
+      - /data/developer:/data
+  environment:
+    - "ENV=dev"
+  links:
+    - api
+  ports:
+    - "8004:80"
+  command: /project/docker/nginx/bootstrap.sh
+ #   - "443:443"
+ 
+# api
+api:
+  build: docker/phpfpm
+  volumes:
+    - ./code:/var/www/html:ro
+    - ./:/project:ro
+    - /data/developer:/data
+  environment:
+    - "ENV=dev"
+  command: /project/docker/phpfpm/bootstrap.sh
+#script
+script:
+  build: docker/phpcli
+  volumes:
+    - ./code:/var/www/html:ro
+    - ./:/project:ro
+    - /data/developer:/data
+  environment:
+    - "ENV=dev"
+  working_dir: /var/www/html
+  command: /project/docker/phpcli/bootstrap.sh
+
+#emq
+emq:
+  build: docker/emqttd
+  #image: emqttd-docker-v2.3.1:latest
+  volumes:
+    - ./:/project:ro
+  environment:
+    - "ENV=dev"
+  ports:
+    - "1883:1883"
+    - "5683:5683/udp"
+    - "8083:8083"
+    - "8883:8883"
+    - "8084:8084"
+    - "18083:18083"
+  command: /project/docker/emqttd/bootstrap.sh

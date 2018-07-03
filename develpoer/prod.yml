@@ -1,0 +1,52 @@
+# nginx
+nginx:
+  build: docker/nginx
+  volumes:
+      - ./:/project:ro
+      - /data/developer:/data
+  environment:
+    - "ENV=prod"
+  links:
+    - api
+  ports:
+    - "8018:80"
+    - "443:443"
+  command: /project/docker/nginx/bootstrap.sh
+  restart: always
+# api
+api:
+  build: docker/phpfpm
+  volumes:
+    - ./code:/var/www/html:ro
+    - ./:/project:ro
+    - /data/developer:/data
+  environment:
+    - "ENV=prod"
+  command: /project/docker/phpfpm/bootstrap.sh
+  restart: always
+script:
+  build: docker/phpcli
+  volumes:
+    - ./code:/var/www/html:ro
+    - ./:/project:ro
+    - /data/developer:/data
+  environment:
+    - "ENV=prod"
+  working_dir: /var/www/html
+  command: /project/docker/phpcli/bootstrap.sh
+  restart: always
+#emq
+emq:
+  build: docker/emqttd
+  volumes:
+    - ./:/project:ro
+  environment:
+    - "ENV=prod"
+  ports:
+    - "1883:1883"
+    - "8083:8083"
+    - "8883:8883"
+    - "8084:8084"
+    - "18083:18083"
+  command: /project/docker/emqttd/bootstrap.sh
+  restart: always

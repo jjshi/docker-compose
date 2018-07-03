@@ -1,0 +1,17 @@
+
+#emq
+emq:
+  image: emqttd-docker-v2.3.6:latest
+  volumes:
+    - ./:/project:ro
+  environment:
+    - "ENV=dev"
+  ports:
+    - "1883:1883"
+    - "5683:5683/udp"
+    - "8083:8083"
+    - "8883:8883"
+    - "8084:8084"
+    - "18083:18083"
+  command: /project/docker/emqttd/bootstrap.sh
+  restart: always
