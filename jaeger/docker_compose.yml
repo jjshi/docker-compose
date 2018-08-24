@@ -4,7 +4,6 @@ version: '2'
 services:
   jaeger-agent:
     image: jaegertracing/jaeger-agent
-    hostname: jaeger-agent
     command: ["--collector.host-port=jaeger-collector:14267"]
     ports:
       - "5775:5775/udp"
@@ -14,8 +13,6 @@ services:
     restart: on-failure
     environment:
       - SPAN_STORAGE_TYPE=elasticsearch
-    networks:
-      - elastic-jaeger
     depends_on:
       - jaeger-collector
     restart: on-failure
@@ -37,8 +34,6 @@ services:
       - "9411:9411"
     links:
       - elasticsearch
-    networks:
-      - elastic-jaeger
     environment:
       - SPAN_STORAGE_TYPE=elasticsearch
     command: [
@@ -56,11 +51,9 @@ services:
       - no_proxy=localhost
     ports:
       - "16686:16686"
-      #- "16687:16687"
+      - "16687:16687"
     links:
       - elasticsearch
-    networks:
-      - elastic-jaeger
     command: [
       "--es.server-urls=http://elasticsearch:9200",
       "--span-storage.type=elasticsearch",
@@ -70,7 +63,3 @@ services:
     depends_on:
       - jaeger-collector
     restart: on-failure
-
-networks:
-  elastic-jaeger:
-      driver: bridge
